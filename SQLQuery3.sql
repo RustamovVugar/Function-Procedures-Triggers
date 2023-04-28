@@ -97,50 +97,69 @@
 
 --Function yaziriq. Funtion Id-si function gelen id-den boyuk olan userlerin orta yashlarini qaytarsin.
 
-select * from Teachers
+--select * from Teachers
 
-create function dbo.getTeachersAverageAgesByCondition(@id int)
-returns float
+--create function dbo.getTeachersAverageAgesByCondition(@id int)
+--returns float
+--as
+--Begin
+--declare @sum float = cast((select sum(Age) from Teachers where Id>@id) as float)
+--declare @count float = cast((select count(Age) from Teachers where Id>@id) as float)
+--return @sum/@count
+--End
+
+--select dbo.getTeachersAverageAgesByCondition(4)
+
+--create function dbo.getTeachersAverageSalaryByCondition(@id int)
+--returns decimal
+--as
+--Begin
+--declare @avg decimal;
+--select @avg = AVG(salary) from Teachers where Id > @id;
+--return @avg
+--End
+
+--select dbo.getTeachersAverageSalaryByCondition(4)
+
+
+--create procedure usp_InsertTeacher
+--@name nvarchar(50),
+--@surname nvarchar(50),
+--@age int,
+--@email nvarchar(100),
+--@salary decimal
+--AS
+--Begin
+--insert into Teachers([Name],[Surname],[Age],[Email],[Salary])
+--values(@name, @surname, @age, @email, @salary)
+--End
+
+
+--exec usp_InsertTeacher 'Novreste','Aslanzade',25,'novreste@code.edu.az',1500
+
+--create procedure usp_SumOfNums
+--@num1 int,
+--@num2 int
+--as
+--select @num1+@num2
+
+--exec usp_SumOfNums 5,7
+
+--create trigger trg_InsertTeacher on Teachers
+--for insert
+--as
+--Begin
+--insert into TeacherLogs([TeacherId],[Operation],[Date])
+--select Id,'Insert', GETDATE() from inserted 
+--End
+
+create trigger trg_deleteTeacher on Teachers
+after delete
 as
 Begin
-declare @sum float = cast((select sum(Age) from Teachers where Id>@id) as float)
-declare @count float = cast((select count(Age) from Teachers where Id>@id) as float)
-return @sum/@count
-End
-
-select dbo.getTeachersAverageAgesByCondition(4)
-
-create function dbo.getTeachersAverageSalaryByCondition(@id int)
-returns decimal
-as
-Begin
-declare @avg decimal;
-select @avg = AVG(salary) from Teachers where Id > @id;
-return @avg
-End
-
-select dbo.getTeachersAverageSalaryByCondition(4)
-
-
-create procedure usp_InsertTeacher
-@name nvarchar(50),
-@surname nvarchar(50),
-@age int,
-@email nvarchar(100),
-@salary decimal
-AS
-Begin
-insert into Teachers([Name],[Surname],[Age],[Email],[Salary])
-values(@name, @surname, @age, @email, @salary)
+insert into TeacherLogs([TeacherId],[Operation],[Date])
+select Id ,'Delete', GETDATE() from deleted 
 End
 
 
-exec usp_InsertTeacher 'Novreste','Aslanzade',25,'novreste@code.edu.az',1500
-
-create procedure usp_SumOfNums
-@num1 int,
-@num2 int
-as
-select @num1+@num2
-
-exec usp_SumOfNums 5,7
+delete from Teachers where Id = 7
